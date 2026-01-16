@@ -1,54 +1,158 @@
-# MiGrid Deployment Guide
+<div align="center">
 
-**Version:** 10.0.0
-**Last Updated:** January 2026
+# 🚀 MiGrid Deployment Guide
 
-## Quick Start
+**Version 10.0.0** • **January 2026**
 
-### Prerequisites
-- Docker & Docker Compose
-- Node.js 18+ (for development)
-- PostgreSQL 15+ with TimescaleDB
-- 8GB RAM minimum (16GB recommended)
-- 50GB disk space
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com)
+[![Node](https://img.shields.io/badge/Node.js-18%2B-brightgreen.svg)](https://nodejs.org)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15%2B-blue.svg)](https://www.postgresql.org)
 
-### One-Command Deploy
+[Quick Start](#quick-start) • [Configuration](#environment-variables) • [API Examples](#api-examples) • [Troubleshooting](#troubleshooting)
+
+</div>
+
+---
+
+## ⚡ Quick Start
+
+### 📋 Prerequisites
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+**Required:**
+- ✅ Docker & Docker Compose
+- ✅ Node.js 18+ (for development)
+- ✅ PostgreSQL 15+ with TimescaleDB
+- ✅ Git
+
+</td>
+<td width="50%" valign="top">
+
+**System Requirements:**
+- 💻 8GB RAM minimum (16GB recommended)
+- 💾 50GB disk space
+- 🌐 Internet connection for blockchain
+- 🔐 Port availability (3001-3010, 5173)
+
+</td>
+</tr>
+</table>
+
+### 🎯 One-Command Deploy
 
 ```bash
 # Start entire platform
 docker-compose up --build
-
-# Access services
-# Admin Portal: http://localhost:5173
-# API Docs: http://localhost:3001/health (and 3002-3010)
 ```
 
-## Service Ports
+**Access Points:**
+- 🖥️ **Admin Portal:** http://localhost:5173
+- 🔍 **Health Checks:** http://localhost:3001/health (and ports 3002-3010)
 
-| Service | Port | Description |
-|---------|------|-------------|
-| Physics Engine (L1) | 3001 | Energy variance calculation |
-| Grid Signal (L2) | 3002 | OpenADR 3.0 VEN |
-| VPP Aggregator (L3) | 3003 | Fleet capacity aggregation |
-| Market Gateway (L4) | 3004 | CAISO/PJM integration |
-| Driver Experience API (L5) | 3005 | Mobile app backend |
-| Engagement Engine (L6) | 3006 | Gamification & leaderboards |
-| Device Gateway (L7) | 3007, 9220 | OCPP WebSocket |
-| Energy Manager (L8) | 3008 | Dynamic Load Management |
-| Commerce Engine (L9) | 3009 | Billing & tariffs |
-| Token Engine (L10) | 3010 | Web3 rewards |
-| Admin Portal Web | 5173 | React admin interface |
+---
 
-## Database Setup
+## 🌐 Service Ports
 
-### Initialize Schema
+<table>
+<tr>
+<td width="15%" align="center"><b>Port</b></td>
+<td width="10%" align="center"><b>Layer</b></td>
+<td width="35%"><b>Service</b></td>
+<td width="40%"><b>Description</b></td>
+</tr>
+<tr>
+<td align="center"><code>:3001</code></td>
+<td align="center">⚛️ L1</td>
+<td><b>Physics Engine</b></td>
+<td>Energy variance calculation & validation</td>
+</tr>
+<tr>
+<td align="center"><code>:3002</code></td>
+<td align="center">🌐 L2</td>
+<td><b>Grid Signal</b></td>
+<td>OpenADR 3.0 VEN demand response</td>
+</tr>
+<tr>
+<td align="center"><code>:3003</code></td>
+<td align="center">⚡ L3</td>
+<td><b>VPP Aggregator</b></td>
+<td>Fleet capacity aggregation for markets</td>
+</tr>
+<tr>
+<td align="center"><code>:3004</code></td>
+<td align="center">💹 L4</td>
+<td><b>Market Gateway</b></td>
+<td>CAISO/PJM wholesale market integration</td>
+</tr>
+<tr>
+<td align="center"><code>:3005</code></td>
+<td align="center">📱 L5</td>
+<td><b>Driver Experience API</b></td>
+<td>Mobile app backend with JWT auth</td>
+</tr>
+<tr>
+<td align="center"><code>:3006</code></td>
+<td align="center">🎮 L6</td>
+<td><b>Engagement Engine</b></td>
+<td>Gamification, leaderboards & achievements</td>
+</tr>
+<tr>
+<td align="center"><code>:3007</code><br><code>:9220</code></td>
+<td align="center">🔌 L7</td>
+<td><b>Device Gateway</b></td>
+<td>OCPP 2.0.1 charger communication<br>(HTTP + WebSocket)</td>
+</tr>
+<tr>
+<td align="center"><code>:3008</code></td>
+<td align="center">📊 L8</td>
+<td><b>Energy Manager</b></td>
+<td>Dynamic Load Management (DLM)</td>
+</tr>
+<tr>
+<td align="center"><code>:3009</code></td>
+<td align="center">💰 L9</td>
+<td><b>Commerce Engine</b></td>
+<td>Billing, tariffs & reimbursements</td>
+</tr>
+<tr>
+<td align="center"><code>:3010</code></td>
+<td align="center">💎 L10</td>
+<td><b>Token Engine</b></td>
+<td>Web3 rewards on Polygon</td>
+</tr>
+<tr>
+<td align="center"><code>:5173</code></td>
+<td align="center">🖥️</td>
+<td><b>Admin Portal</b></td>
+<td>React frontend (Vite dev server)</td>
+</tr>
+</table>
+
+---
+
+## 🗄️ Database Setup
+
+<details open>
+<summary><b>1️⃣ Initialize Schema</b></summary>
 
 ```bash
 # Run migrations
 docker exec -i migrid-postgres-1 psql -U migrid -d migrid_core < scripts/migrations/001_init_schema.sql
 ```
 
-### Seed Demo Data
+**Creates:**
+- ✅ 15+ tables with proper relationships
+- ✅ TimescaleDB hypertables for time-series data
+- ✅ Indexes for performance optimization
+- ✅ Seed data for token reward rules
+
+</details>
+
+<details open>
+<summary><b>2️⃣ Seed Demo Data</b></summary>
 
 ```bash
 # Install dependencies
@@ -58,39 +162,123 @@ npm install
 node scripts/seed-data.js
 ```
 
-### Demo Credentials
+**Generates:**
+- 🏢 1 demo fleet (Green Transport Co)
+- 👤 3 drivers with authentication
+- 🚗 3 vehicles (Ford F-150 Lightning, Rivian R1T, Tesla Semi)
+- ⚡ 3 OCPP 2.0.1 chargers
+- 📊 20 historical charging sessions
+- 💹 24 hours of LMP price data
 
-**Email:** alice@demo.com
-**Password:** demo123
+</details>
 
-## Environment Variables
+<details open>
+<summary><b>🔐 Demo Credentials</b></summary>
 
-### Production Setup
+**Login Information:**
+```
+Email:    alice@demo.com
+Password: demo123
+```
 
-Create `.env` file:
+**Additional test accounts:**
+- `bob@demo.com` / `demo123`
+- `carol@demo.com` / `demo123`
+
+</details>
+
+---
+
+## 🔧 Environment Variables
+
+<details open>
+<summary><b>Production Configuration</b></summary>
+
+Create `.env` file in project root:
 
 ```bash
-# Database
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Database Configuration
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 DATABASE_URL=postgresql://user:pass@host:5432/migrid_core
+POSTGRES_USER=migrid
+POSTGRES_PASSWORD=your_secure_password
+POSTGRES_DB=migrid_core
 
-# Security
-JWT_SECRET=your-secret-key-here
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Security & Authentication
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+JWT_SECRET=your_256_bit_secret_key_here_change_in_production
+JWT_EXPIRATION=7d
 
-# Markets
-CAISO_SC_ID=your_sc_id
-CAISO_API_KEY=your_api_key
-PJM_MEMBER_ID=your_member_id
-PJM_API_KEY=your_api_key
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Wholesale Market APIs
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# CAISO
+CAISO_SC_ID=your_scheduling_coordinator_id
+CAISO_API_KEY=your_caiso_api_key
+CAISO_BASE_URL=https://api.caiso.com
 
-# Blockchain
+# PJM
+PJM_MEMBER_ID=your_pjm_member_id
+PJM_API_KEY=your_pjm_api_key
+PJM_BASE_URL=https://api.pjm.com
+
+# ERCOT
+ERCOT_MEMBER_ID=your_ercot_member_id
+ERCOT_API_KEY=your_ercot_api_key
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Blockchain Configuration
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 POLYGON_RPC_URL=https://polygon-rpc.com
-WALLET_PRIVATE_KEY=your_private_key
+WALLET_PRIVATE_KEY=your_ethereum_private_key_no_0x_prefix
+TOKEN_CONTRACT_ADDRESS=0x1234567890abcdef
+CHAIN_ID=137
 
-# Grid
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Grid & Energy Configuration
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 GRID_CONNECTION_LIMIT_KW=500
 MODBUS_HOST=192.168.1.100
 MODBUS_PORT=502
+MODBUS_SLAVE_ID=1
+
+# VPP Configuration
+VPP_MIN_CAPACITY_KW=100
+VPP_BESS_MIN_SOC=20
+
+# LMP Trading Thresholds
+LMP_THRESHOLD_BUY=30.00
+LMP_THRESHOLD_SELL=100.00
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Service Configuration
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NODE_ENV=production
+LOG_LEVEL=info
+REDIS_URL=redis://localhost:6379
+KAFKA_BROKERS=localhost:9092
 ```
+
+</details>
+
+<details>
+<summary><b>🔐 Security Best Practices</b></summary>
+
+**Production Checklist:**
+- [ ] Generate strong JWT secret (min 256 bits)
+- [ ] Use environment-specific `.env` files
+- [ ] Never commit `.env` to version control
+- [ ] Rotate API keys regularly
+- [ ] Use secrets management (AWS Secrets Manager, HashiCorp Vault)
+- [ ] Enable SSL/TLS for all database connections
+- [ ] Use read-only database replicas for reporting
+- [ ] Implement API rate limiting
+
+</details>
+
+---
 
 ## Health Checks
 
@@ -101,6 +289,8 @@ for port in 3001 3002 3003 3004 3005 3006 3007 3008 3009 3010; do
   curl -s http://localhost:$port/health | jq
 done
 ```
+
+---
 
 ## Monitoring
 
@@ -127,6 +317,8 @@ docker exec -it migrid-postgres-1 psql -U migrid -d migrid_core -c "SELECT * FRO
 # Leaderboard
 docker exec -it migrid-postgres-1 psql -U migrid -d migrid_core -c "SELECT * FROM leaderboard ORDER BY rank;"
 ```
+
+---
 
 ## API Examples
 
@@ -197,6 +389,8 @@ curl http://localhost:3008/load/current
 curl -X POST http://localhost:3008/dlm/apply
 ```
 
+---
+
 ## Troubleshooting
 
 ### Service won't start
@@ -232,6 +426,8 @@ lsof -i :3001
 kill -9 PID
 ```
 
+---
+
 ## Production Deployment
 
 ### Kubernetes
@@ -251,6 +447,8 @@ kill -9 PID
 - [ ] Set up monitoring (Prometheus/Grafana)
 - [ ] Configure log aggregation (ELK/Loki)
 
+---
+
 ## Backup & Recovery
 
 ```bash
@@ -260,6 +458,8 @@ docker exec migrid-postgres-1 pg_dump -U migrid migrid_core > backup.sql
 # Restore database
 docker exec -i migrid-postgres-1 psql -U migrid -d migrid_core < backup.sql
 ```
+
+---
 
 ## Performance Tuning
 
@@ -282,4 +482,4 @@ SELECT set_chunk_time_interval('lmp_prices', INTERVAL '1 day');
 
 ---
 
-*For questions or support, see the main README or open an issue on GitHub.*
+**For questions or support, see the main README or open an issue on GitHub.**
